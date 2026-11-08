@@ -1,0 +1,13 @@
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { Trash2, CalendarDays, Heart } from 'lucide-react';
+import { outfitsQuery, itemsQuery, useInvalidate } from '@/lib/data';
+import { supabase } from '@/integrations/supabase/client';
+import { pageHead } from '@/lib/page-head';
+import { PageHeader, EmptyState } from '@/components/drape/AppShell';
+import { ItemThumb } from '@/components/drape/ItemThumb';
+import { Button } from '@/components/ui/button';
+export const Route=createFileRoute('/_authenticated/looks')({head:()=>pageHead('Lookbook','Your saved private outfit combinations.'),loader:async({context})=>{await context.queryClient.ensureQueryData(outfitsQuery);await context.queryClient.ensureQueryData(itemsQuery);},component:Looks});
+function Looks(){const {data:outfits}=useSuspenseQuery(outfitsQuery);const {data:items}=useSuspenseQuery(itemsQuery);const inv=useInvalidate();async function remove(id:string){if(!window.confirm('Delete this saved look?'))return;const {error}=await supabase.from('outfits').delete().eq('id',id);if(error)toast.error('Could not delete look');else await inv('outfits','events');}
+return <><PageHeader eyebrow={`${outfits.length} saved combinations`} title="The lookbook."><Button asChild><Link to="/stylist">Create a look</Link></Button></PageHeader>{outfits.length?<div className="grid items-start gap-6 lg:grid-cols-2">{outfits.map(o=><article key={o.id} className="editorial-card p-5"><div className="grid grid-cols-3 gap-2">{o.outfit_items.map(s=>{const i=items.find(i=>i.id===s.item_id);return i?<div key={i.id}><ItemThumb item={i}/><p className="mt-2 text-xs">{i.name}</p></div>:null;})}</div><p className="eyebrow mt-5">{o.source==='ai'?'AI styled':'Rule-based · not AI'}</p><h2 className="mt-2 font-display text-2xl">{o.name}</h2><div className="mt-4 flex flex-wrap gap-2"><Button variant="outline" asChild><Link to="/planner"><CalendarDays/>Plan this look</Link></Button><Button variant="ghost" size="icon" aria-label={`Favourite ${o.name}`} title="Favourite" onClick={async()=>{const {error}=await supabase.from('outfits').update({favorite:!o.favorite}).eq('id',o.id);if(error)toast.error('Could not update');else await inv('outfits');}}><Heart className={o.favorite?'fill-current text-terracotta':''}/></Button><Button variant="ghost" size="icon" title="Delete" aria-label={`Delete ${o.name}`} onClick={()=>remove(o.id)}><Trash2/></Button></div></article>)}</div>:<EmptyState title="Keep the looks you love." body="Save a combination from Create outfit and find it here whenever you need it." action={<Button asChild><Link to="/stylist">Find my first look</Link></Button>}/>}</>;}

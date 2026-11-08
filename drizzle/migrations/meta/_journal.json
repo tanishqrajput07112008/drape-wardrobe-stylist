@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1793979807503,
+      "tag": "0000_drape_core_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794120659680,
+      "tag": "0001_strengthen_private_references",
+      "breakpoints": true
+    }
+  ]
+}

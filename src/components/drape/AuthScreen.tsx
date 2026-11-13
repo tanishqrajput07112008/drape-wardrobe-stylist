@@ -6,7 +6,7 @@ import { lovable } from '@/integrations/lovable';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Logo } from './Logo';
-import image from '@/assets/wardrobe-editorial.jpg';
+import image from '@/assets/wardrobe-editorial.svg';
 export function AuthScreen() {
  const navigate = useNavigate(); const [mode,setMode]=useState<'login'|'signup'|'reset'>('login'); const [email,setEmail]=useState(''); const [password,setPassword]=useState(''); const [busy,setBusy]=useState(false); const [notice,setNotice]=useState('');
  useEffect(()=>{ void supabase.auth.getUser().then(({data})=>{if(data.user) void navigate({to:'/dashboard',replace:true});}); },[navigate]);

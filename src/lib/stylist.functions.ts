@@ -106,9 +106,9 @@ export const chatWithStylist = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const [itemsRes, profileRes, histRes] = await Promise.all([
-      supabase.from("wardrobe_items").select("name,category,subcategory,colors,formality,availability,occasions").limit(300),
+      supabase.from("wardrobe_items").select("name,category,subcategory,colors,formality,availability,occasions").eq("availability", "clean").limit(80),
       supabase.from("profiles").select("display_name,style_prefs,preferred_colors,avoid_colors,climate,comfort_notes,modesty_notes,clothing_categories,undertone,fit_prefs").maybeSingle(),
-      supabase.from("chat_messages").select("role,content").order("created_at", { ascending: false }).limit(16),
+      supabase.from("chat_messages").select("role,content").order("created_at", { ascending: false }).limit(10),
     ]);
     await supabase.from("chat_messages").insert({ user_id: userId, role: "user", content: data.message });
     const history = (histRes.data ?? []).reverse().map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
@@ -124,8 +124,24 @@ export const chatWithStylist = createServerFn({ method: "POST" })
       await supabase.from("chat_messages").insert({ user_id: userId, role: "assistant", content: reply });
       return { reply, error: null as string | null };
     } catch (e) {
-      console.error("chat AI failed", e);
-      return { reply: null, error: friendlyAIError(e) };
+      console.error("Misty AI unavailable; using wardrobe-only fallback", e);
+      const owned = (itemsRes.data ?? []).filter((item) => item.name);
+      const grouped = new Map<string, string[]>();
+      for (const item of owned) {
+        const category = item.category || "Other";
+        const names = grouped.get(category) ?? [];
+        if (names.length < 8) names.push(item.name);
+        grouped.set(category, names);
+      }
+      const inventory = [...grouped.entries()]
+        .slice(0, 6)
+        .map(([category, names]) => `• ${category}: ${names.join(", ")}`)
+        .join("\\n");
+      const fallback = owned.length
+        ? `Misty’s AI service is temporarily unavailable, so this is a basic wardrobe-based fallback rather than an AI-generated answer.\\n\\nHere are pieces I can see in your saved wardrobe:\\n${inventory}\\n\\nTry asking again later for a more tailored conversation. You can also use Create outfit for occasion-based combinations.`
+        : `Misty’s AI service is temporarily unavailable. Add a few pieces to your wardrobe and try Create outfit for basic outfit combinations while the AI service is unavailable.`;
+      await supabase.from("chat_messages").insert({ user_id: userId, role: "assistant", content: fallback });
+      return { reply: fallback, error: null as string | null };
     }
   });
 

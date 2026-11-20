@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
+import type { FormEvent } from "react";
 import { Loader2, MessageCircle, Send, Sparkles } from "lucide-react";
 import { chatQuery } from "@/lib/data";
 import { chatWithStylist } from "@/lib/stylist.functions";

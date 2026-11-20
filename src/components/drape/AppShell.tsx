@@ -9,7 +9,7 @@ const NAV = [
   { to: "/dashboard", label: "Today", icon: Home },
   { to: "/wardrobe", label: "Wardrobe", icon: Shirt },
   { to: "/stylist", label: "Create outfit", icon: Sparkles },
-  { to: "/chat", label: "Ask Drape", icon: MessageCircle },
+  { to: "/chat", label: "Ask Misty", icon: MessageCircle },
   { to: "/looks", label: "Lookbook", icon: Bookmark },
   { to: "/planner", label: "Planner", icon: CalendarDays },
   { to: "/insights", label: "Insights", icon: LineChart },
@@ -53,7 +53,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <header className="sticky top-0 z-20 flex items-center justify-between border-b bg-background/90 px-4 py-3 backdrop-blur md:hidden">
           <Logo to="/dashboard" />
           <div className="flex gap-1">
-            <Link to="/chat" className="rounded-full p-2 hover:bg-muted" aria-label="Ask Drape"><MessageCircle className="size-5" /></Link>
+            <Link to="/chat" className="rounded-full p-2 hover:bg-muted" aria-label="Ask Misty"><MessageCircle className="size-5" /></Link>
             <Link to="/settings" className="rounded-full p-2 hover:bg-muted" aria-label="Settings"><Settings className="size-5" /></Link>
           </div>
         </header>

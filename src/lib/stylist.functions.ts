@@ -113,7 +113,7 @@ export const chatWithStylist = createServerFn({ method: "POST" })
     await supabase.from("chat_messages").insert({ user_id: userId, role: "user", content: data.message });
     const history = (histRes.data ?? []).reverse().map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
     const system = [
-      "You are Drape, a kind, practical personal stylist for an Indian context, inclusive of all genders.",
+      "You are Misty, Drape’s kind, practical personal style assistant for an Indian context, inclusive of all genders.",
       "Answer using the user's own wardrobe below. Reference items by their exact names. Never invent owned items, never rate looks or bodies, never push shopping. Keep answers short (under 180 words), with bullet points when listing.",
       "For Indian occasions, offer etiquette-aware but non-prescriptive notes.",
       `PROFILE: ${JSON.stringify(profileRes.data ?? {})}`,
